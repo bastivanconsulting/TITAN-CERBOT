@@ -21,7 +21,7 @@ Titan Certbot is a lightweight utility written in Go designed to automate the re
 Clone the repository and build the binary:
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:bastivanconsulting/TITAN-CERBOT.git
 cd titan-certbot
 go build -o titan-certbot
 ```
