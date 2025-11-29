@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  push:
+    tags: [ "v*" ]
+
+jobs:
+
+  build:
+    uses: ./.github/workflows/reusable-build.yml
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
