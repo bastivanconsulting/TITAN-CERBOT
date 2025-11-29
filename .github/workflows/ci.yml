@@ -10,6 +10,11 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows]
+        goarch: [amd64]
+
     steps:
     - uses: actions/checkout@v4
 
@@ -19,7 +24,22 @@ jobs:
         go-version: '1.24.4'
 
     - name: Build
-      run: go build -v -o titan-certbot ./...
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+      run: |
+        OUTPUT_NAME=titan-certbot
+        if [ "$GOOS" == "windows" ]; then
+          OUTPUT_NAME+=".exe"
+        fi
+        go build -v -o $OUTPUT_NAME ./...
 
     - name: Test
+      if: matrix.goos == 'linux' # Run tests only on Linux for now
       run: go test -v ./...
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: titan-certbot-${{ matrix.goos }}-${{ matrix.goarch }}
+        path: titan-certbot*
