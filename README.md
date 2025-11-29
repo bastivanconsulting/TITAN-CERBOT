@@ -19,6 +19,27 @@ Titan Certbot is a lightweight utility written in Go designed to automate the re
 
 ## Installation
 
+### Using Packages (Linux)
+
+Download the `.deb` or `.rpm` package from the [Releases](https://github.com/bastivanconsulting/TITAN-CERBOT/releases) page.
+
+**Debian/Ubuntu:**
+```bash
+sudo dpkg -i titan-certbot_*.deb
+```
+
+**RHEL/CentOS:**
+```bash
+sudo rpm -ivh titan-certbot-*.rpm
+```
+
+The package installs:
+- Binary to `/usr/bin/titan-certbot`
+- Example config to `/etc/titan/certbot-config.example.json`
+- Systemd timer and service (active by default, runs daily)
+
+### Manual Installation
+
 Clone the repository and build the binary:
 
 ```bash
@@ -29,9 +50,13 @@ go build -o titan-certbot
 
 ## Usage
 
-### Configuration File (Recommended)
+### Configuration File
 
-Create a `config.json` file to manage your domains:
+1.  Copy the example config:
+    ```bash
+    sudo cp /etc/titan/certbot-config.example.json /etc/titan/certbot-config.json
+    ```
+2.  Edit `/etc/titan/certbot-config.json` to manage your domains:
 
 ```json
 {
@@ -43,35 +68,34 @@ Create a `config.json` file to manage your domains:
       "domain": "example.com",
       "webroot": "/var/www/html",
       "output_dir": "/etc/titan/certs"
-    },
-    {
-      "domain": "api.example.com",
-      "webroot": "/var/www/api",
-      "output_dir": "/etc/titan/certs"
     }
   ]
 }
 ```
 
-Run the tool referencing the config file:
+### Automation (Cronjob/Systemd)
 
+If you installed via `.deb` or `.rpm`, a systemd timer is already enabled to run daily. It executes:
 ```bash
-sudo ./titan-certbot -config config.json
+/usr/bin/titan-certbot -config /etc/titan/certbot-config.json
 ```
 
-**Cronjob Setup:**
-To run this automatically every day at 3 AM, add the following to your crontab (`crontab -e`):
-
+To verify the timer status:
 ```bash
-0 3 * * * /path/to/titan-certbot -config /path/to/config.json >> /var/log/titan-certbot.log 2>&1
+systemctl status titan-certbot.timer
+```
+
+To run manually:
+```bash
+sudo titan-certbot -config /etc/titan/certbot-config.json
 ```
 
 ### Legacy Command Line Arguments
 
-For single domain issuance, you can still use the command line flags:
+For single domain issuance without a config file:
 
 ```bash
-sudo ./titan-certbot -domain <your-domain> -email <your-email> [options]
+sudo titan-certbot -domain <your-domain> -email <your-email> [options]
 ```
 
 | Flag | Description | Default |

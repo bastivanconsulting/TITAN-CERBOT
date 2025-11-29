@@ -1,0 +1,12 @@
+{
+  "email": "admin@example.com",
+  "staging": false,
+  "restart_command": "systemctl restart titan-server",
+  "domains": [
+    {
+      "domain": "example.com",
+      "webroot": "/var/www/titan/public",
+      "output_dir": "/etc/titan/certs/manual"
+    }
+  ]
+}

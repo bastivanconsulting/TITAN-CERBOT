@@ -35,11 +35,36 @@ jobs:
         go build -v -o $OUTPUT_NAME ./...
 
     - name: Test
-      if: matrix.goos == 'linux' # Run tests only on Linux for now
+      if: matrix.goos == 'linux'
       run: go test -v ./...
 
-    - name: Upload Artifact
+    - name: Install nfpm
+      if: matrix.goos == 'linux'
+      run: |
+        echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+        sudo apt-get update
+        sudo apt-get install nfpm
+
+    - name: Package (Linux)
+      if: matrix.goos == 'linux'
+      env:
+        VERSION: "1.0.${{ github.run_number }}"
+      run: |
+        nfpm package --packager deb --target titan-certbot_${VERSION}_amd64.deb
+        nfpm package --packager rpm --target titan-certbot-${VERSION}-1.x86_64.rpm
+
+    - name: Package (Windows)
+      if: matrix.goos == 'windows'
+      run: |
+        zip titan-certbot-windows-amd64.zip titan-certbot.exe config.example.json README.md
+
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: titan-certbot-${{ matrix.goos }}-${{ matrix.goarch }}
-        path: titan-certbot*
+        name: titan-certbot-packages-${{ matrix.goos }}-${{ matrix.goarch }}
+        path: |
+          *.deb
+          *.rpm
+          *.zip
+          titan-certbot
+          titan-certbot.exe
