@@ -1,0 +1,7 @@
+[Unit]
+Description=Titan Certbot SSL Renewal
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/titan-certbot -config /etc/titan/certbot-config.json

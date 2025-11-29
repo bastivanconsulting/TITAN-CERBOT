@@ -1,0 +1,32 @@
+name: "titan-certbot"
+arch: "amd64"
+platform: "linux"
+version: "${VERSION}"
+section: "utils"
+priority: "optional"
+maintainer: "Bastivan Consulting <admin@bastivan.com>"
+description: "Automated Let's Encrypt SSL/TLS certificate manager for Titan Web Server"
+vendor: "Bastivan Consulting"
+homepage: "https://github.com/bastivanconsulting/TITAN-CERBOT"
+license: "MIT"
+
+contents:
+  - src: "./titan-certbot"
+    dst: "/usr/bin/titan-certbot"
+  - src: "./titan-certbot.service"
+    dst: "/lib/systemd/system/titan-certbot.service"
+  - src: "./titan-certbot.timer"
+    dst: "/lib/systemd/system/titan-certbot.timer"
+  - src: "./config.example.json"
+    dst: "/etc/titan/certbot-config.example.json"
+    type: "config"
+
+overrides:
+  rpm:
+    scripts:
+      postinstall: ./scripts/postinstall.sh
+      preremove: ./scripts/preremove.sh
+  deb:
+    scripts:
+      postinstall: ./scripts/postinstall.sh
+      preremove: ./scripts/preremove.sh
